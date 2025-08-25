@@ -25,6 +25,9 @@ from .throttles import (
     ReadManagerThrottle, ReadDeliveryThrottle,
 )
 
+from rest_framework.authentication import TokenAuthentication, SessionAuthentication
+
+
 # Assign user to a group
 @api_view(['POST', 'DELETE'])
 @permission_classes([IsAdminUser])
@@ -68,7 +71,7 @@ class CategoryListCreateView(generics.ListCreateAPIView):
     serializer_class = CategorySerializer
     
     # Permissions
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication, SessionAuthentication]
     
     # Managers manage, everyone can read
     def get_permissions(self):
@@ -106,7 +109,7 @@ class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CategorySerializer
     
     # Permissions
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication, SessionAuthentication]
     
     # Only manager can edit, all can view
     def get_permissions(self):
@@ -136,7 +139,7 @@ class MenuListCreateView(generics.ListCreateAPIView):
     serializer_class = MenuItemSerializer
     
     # Permissions
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication, SessionAuthentication]
     
     # Managers manage, all can view
     def get_permissions(self):
@@ -175,7 +178,7 @@ class MenuDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = MenuItemSerializer
     
     # Permissions
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication, SessionAuthentication]
 
     # Managers manage, all can view
     def get_permissions(self):
@@ -205,7 +208,7 @@ class CartListCreateView(generics.ListCreateAPIView):
     serializer_class = CartSerializer
     
     # Permissions
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated]
     
     # Managers can see all carts and users see only their own carts
@@ -241,7 +244,7 @@ class CartDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CartSerializer
     
     # Permissions
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated, IsOwnerOrManager]
     
     
@@ -280,7 +283,7 @@ class CartDetailView(generics.RetrieveUpdateDestroyAPIView):
 # -----------------------------
 class OrderListCreateView(generics.ListCreateAPIView):
     serializer_class = OrderSerializer
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -318,7 +321,7 @@ class OrderListCreateView(generics.ListCreateAPIView):
 
 class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = OrderSerializer
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated, IsOwnerOrManager]
 
     def get_queryset(self):
@@ -356,7 +359,7 @@ class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
 # -----------------------------
 class OrderItemListCreateView(generics.ListCreateAPIView):
     serializer_class = OrderItemSerializer
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -391,7 +394,7 @@ class OrderItemListCreateView(generics.ListCreateAPIView):
 
 class OrderItemDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = OrderItemSerializer
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated, IsOwnerOrManager]
 
     def get_queryset(self):

@@ -26,7 +26,10 @@ urlpatterns = [
     
     # Djoser authentication endpoints
     path('auth/', include('djoser.urls')),
-    path('auth/', include('djoser.urls.authtoken')), 
+    path('auth/', include('djoser.urls.authtoken')),
+    
+    # Login option
+    path('api-auth/', include('rest_framework.urls')),
     
     # API endpoints
     path('api/', include('LittleLemonAPI.urls')),

@@ -24,6 +24,7 @@ class CartAdmin(admin.ModelAdmin):
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('user', 'delivery_crew', 'status', 'date')
+    list_editable = ('delivery_crew', 'status')
     list_filter = ('status', 'date')
     search_fields = ('user__username',)
 
