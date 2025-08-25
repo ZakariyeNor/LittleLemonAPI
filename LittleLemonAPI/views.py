@@ -17,6 +17,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.authentication import TokenAuthentication
 from .permissions import IsManagerOnly, IsDeliveryCrewOnly, IsOwnerOrManager
 
+from rest_framework.throttling import AnonRateThrottle
+
 from .throttles import (
     WriteUserThrottle, WriteManagerThrottle,
     WriteDeliveryThrottle, ReadUserThrottle,
@@ -82,18 +84,22 @@ class CategoryListCreateView(generics.ListCreateAPIView):
     search_fields = ['slug', 'title']
     ordering_fields = ['slug', 'title']
     
-    # Apply throttles based on method and group
     def get_throttles(self):
-        user = self.request.user
+        user = getattr(self.request, 'user', None)
         if self.request.method == 'GET':
-            if user.is_authenticated and user.groups.filter(name="Manager").exists():
-                return [ReadManagerThrottle()]
-            return [ReadUserThrottle()]
-        elif self.request.method in ['POST']:
+            if user and user.is_authenticated:
+                if user.groups.filter(name="Manager").exists():
+                    return [ReadManagerThrottle()]
+                return [ReadUserThrottle()]
+            else:
+                # Anonymous GET requests
+                return [AnonRateThrottle()]
+        elif self.request.method == 'POST':
             if user.groups.filter(name="Manager").exists():
                 return [WriteManagerThrottle()]
             return [WriteUserThrottle()]
         return super().get_throttles()
+
 
 class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
@@ -109,24 +115,20 @@ class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
         return [IsAuthenticatedOrReadOnly()]
 
     
-    # Unified throttling for read and write
     def get_throttles(self):
-        user = self.request.user
-
+        user = getattr(self.request, 'user', None)
         if self.request.method == 'GET':
-            # Read requests
-            if user.is_authenticated and user.groups.filter(name="Manager").exists():
-                return [ReadManagerThrottle()]
-            return [ReadUserThrottle()]
-
+            if user and user.is_authenticated:
+                if user.groups.filter(name="Manager").exists():
+                    return [ReadManagerThrottle()]
+                return [ReadUserThrottle()]
+            else:
+                return [AnonRateThrottle()]
         elif self.request.method in ['PUT', 'PATCH', 'DELETE']:
-            # Write requests
             if user.groups.filter(name="Manager").exists():
                 return [WriteManagerThrottle()]
             return [WriteUserThrottle()]
-
         return super().get_throttles()
-
 
 # ----------------- MenuItem Views -----------------
 class MenuListCreateView(generics.ListCreateAPIView):
@@ -199,6 +201,7 @@ class MenuDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 # ----------------- Cart Views -----------------
 class CartListCreateView(generics.ListCreateAPIView):
+    queryset = Category.objects.all()
     serializer_class = CartSerializer
     
     # Permissions
