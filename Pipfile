@@ -9,6 +9,7 @@ djangorestframework = "*"
 django-filter = "*"
 bleach = "*"
 djoser = "*"
+djangorestframework-simplejwt = "*"
 
 [dev-packages]
 
