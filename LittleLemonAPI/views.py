@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics, filters
 from .models import Category, MenuItem, Cart, Order, OrderItem
 from .serializers import (
     CategorySerializer, MenuItemSerializer,
@@ -12,6 +12,11 @@ from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 
+from django_filters.rest_framework import DjangoFilterBackend
+
+
+
+# Assign user to a group
 @api_view(['POST', 'DELETE'])
 @permission_classes([IsAdminUser])
 def Assign_group(request):
@@ -66,6 +71,11 @@ class MenuListCreateView(generics.ListCreateAPIView):
     queryset = MenuItem.objects.all()
     serializer_class = MenuItemSerializer
     permission_classes = [IsAdminUser]
+    
+    # Filtering, Searching and Ordering
+    filter_backends = [
+        DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter
+    ]
 
 
 class MenuDetailView(generics.RetrieveUpdateDestroyAPIView):
