@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import Category, MenuItem, Cart, Order, OrderItem
+import bleach
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -9,9 +10,10 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ['id', 'slug', 'title']
     
     def validate_title(self, value):
-        if Category.objects.filter(title__iexact=value).exists():
+        clean_value = bleach.clean(value)
+        if Category.objects.filter(title__iexact=clean_value).exists():
             raise serializers.ValidationError("This category already exists.")
-        return value
+        return clean_value
 
 
 class MenuItemSerializer(serializers.ModelSerializer):
@@ -31,6 +33,10 @@ class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = ['id', 'user', 'menuitem', 'menuitem_id', 'quantity', 'unit_price', 'price']
+    
+    def validate_title(self, value):
+        clean_value = bleach.clean(value)
+        return clean_value
 
 
 class OrderItemSerializer(serializers.ModelSerializer):

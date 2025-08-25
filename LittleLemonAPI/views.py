@@ -59,6 +59,13 @@ class CategoryListCreateView(generics.ListCreateAPIView):
     serializer_class = CategorySerializer
     permission_classes = [IsAdminUser]
 
+    # Filtering, Searching and Ordering
+    filter_backends = [
+        DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter
+    ]
+    filterset_fields = ['slug', 'title']
+    search_fields = ['slug', 'title']
+    ordering_fields = ['slug', 'title']
 
 class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
@@ -76,7 +83,12 @@ class MenuListCreateView(generics.ListCreateAPIView):
     filter_backends = [
         DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter
     ]
-
+    filterset_fields = [
+        'category__id', 'featured', 'price'
+    ]
+    search_fields = ['title']
+    ordering_fields = ['price', 'title']
+    ordering = ['id']
 
 class MenuDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = MenuItem.objects.all()
@@ -99,6 +111,13 @@ class CartDetailView(generics.RetrieveUpdateDestroyAPIView):
 class OrderListCreateView(generics.ListCreateAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    
+    # Filtering & ordering
+    filter_backends = [
+        DjangoFilterBackend, filters.OrderingFilter
+    ]
+    filterset_fields = ['status', 'delivery_crew', 'user']
+    ordering_fields = ['date', 'total', 'status']
 
 
 class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -110,6 +129,13 @@ class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
 class OrderItemListCreateView(generics.ListCreateAPIView):
     queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
+    
+    # Filtering & ordering
+    filter_backends = [
+        DjangoFilterBackend, filters.OrderingFilter
+    ]
+    filterset_fields = ['menuitem', 'order']
+    ordering_fields = ['price', 'quantity', 'unit_price']
 
 
 class OrderItemDetailView(generics.RetrieveUpdateDestroyAPIView):
