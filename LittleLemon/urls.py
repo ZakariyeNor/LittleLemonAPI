@@ -19,5 +19,11 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
+    # Djoser authentication endpoints
+    path('auth/', include('djoser.urls')),
+    path('auth/', include('djoser.urls.authtoken')), 
+    
+    # API endpoints
     path('api/', include('LittleLemonAPI.urls'))
 ]

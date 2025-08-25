@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     # Third-party
     'rest_framework',
     'django_filters',
+    'rest_framework.authtoken',
+    'djoser',
     
     # Local apps
     'LittleLemonAPI'
@@ -49,8 +51,20 @@ INSTALLED_APPS = [
 
 # Rest Framework Defaults
 REST_FRAMEWORK = {
+    # Renderer
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
     # Pagination
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASSES': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 5,
     
     # Filtering and searching
@@ -58,9 +72,27 @@ REST_FRAMEWORK = {
         'django_filters.rest_framework.DjangoFilterBackend',
         'rest_framework.filters.SearchFilter',
         'rest_framework.filters.OrderingFilter',
-    ]
+    ],
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.UserRateThrottle',
+        'rest_framework.throttling.AnonRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'user': '300/day',
+        'anon': '100/day',
+        'write_user': '10/minute',
+        'write_manager': '10/minute',
+        'write_delivery': '10/minute',
+        'read_user': '10/minute',
+        'read_manager': '50/minute',
+        'read_delivery': '20/minute',
+    }
 }
 
+# Djoser
+DJOSER = {
+    "USER_ID_FIELD": "username"
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
